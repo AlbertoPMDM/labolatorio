@@ -1,6 +1,7 @@
 from dash import  html, dash_table
 import dash_bootstrap_components as dbc
 
+# Estilo para todos los campos a llenar
 input_style = {"font-size": "inherit"}
 
 # Entrada para el uid
@@ -55,7 +56,7 @@ cons_input = html.Div([
 )
 ])
 
-# Selector de tabla
+# Selector de tabla, debe tener un elemento para cada valor, asociado en la variable TABLES
 table_select = dbc.Select(
     ["Agregar Material", "Materiales"],
     'Agregar Material', 
@@ -63,14 +64,14 @@ table_select = dbc.Select(
     style=input_style
 )
 
-# Botón para submitir
+# Botón para submitir materiales
 submit_material = html.Button(
     id="submit_material",
     children="añadir",
     style=input_style
 )
 
-# Botón para recargar la tabla
+# Botón para recargar la tabla de materiales
 refresh_materials = html.Button(
     id="refresh_materials",
     children="recargar",
@@ -88,12 +89,13 @@ materials_menu = dbc.Stack([
     submit_material
 ], gap=3)
 
+# Tabla de los materiales
 materials_table = dash_table.DataTable(
     [],
     id="materials_table"
 )
 
-
+# Tabla de materiales pero con botón para recargarla
 materials_table_view = dbc.Stack([
     refresh_materials,
     materials_table
@@ -106,6 +108,7 @@ form = html.Div(
     children=materials_menu,
 )
 
+# Mensaje que sale al añadir un material
 material_add_message = dbc.Modal(
     [
     dbc.ModalBody("Se añadió correctamente")

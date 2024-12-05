@@ -38,7 +38,7 @@ class Database:
                      lugar:str = None, 
                      consumible:str = None, callback:Callable[..., None] = lambda _:None) -> None:
         '''
-        añade un material a la tabla de materiales
+        añade un material a la tabla de materiales, se quitó para manejar los errores para hacerlo desde la gui
         '''
         self.create_materials_table()
         # try:
