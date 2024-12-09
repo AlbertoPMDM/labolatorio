@@ -19,11 +19,15 @@ class Database:
                         '''
                         CREATE TABLE IF NOT EXISTS "materiales" (
                             "uid"	INTEGER,
+                            "activo" INTEGER,
                             "nombre"	TEXT,
+                            "marca"	TEXT,
                             "cantidad"	INTEGER,
                             "laboratorio"	TEXT,
                             "lugar" TEXT,
-                            "consumible"    TEXT
+                            "consumible"    TEXT,
+                            "funciona" TEXT,
+                            PRIMARY KEY (uid)
                         )
                         '''
                     )
@@ -32,11 +36,15 @@ class Database:
 
     def add_material(self, 
                      uid:int, 
+                     activo:int,
                      nombre:str, 
+                     marca:str,
                      cantidad:int, 
                      laboratorio:str = None, 
                      lugar:str = None, 
-                     consumible:str = None, callback:Callable[..., None] = lambda _:None) -> None:
+                     consumible:str = None, 
+                     funciona:str = None,
+                     callback:Callable[..., None] = lambda _:None) -> None:
         '''
         añade un material a la tabla de materiales, se quitó para manejar los errores para hacerlo desde la gui
         '''
@@ -48,13 +56,16 @@ class Database:
                     '''
                     INSERT INTO "materiales" (
                     "uid",
+                    activo,
                     "nombre",
+                    "marca",
                     "cantidad",
                     "laboratorio",
                     "lugar",
-                    "consumible"
-                    ) VALUES (?,?,?,?,?,?)
-                    ''',(uid,nombre,cantidad,laboratorio,lugar,consumible)
+                    "consumible",
+                    "funciona"
+                    ) VALUES (?,?,?,?,?,?,?,?,?)
+                    ''',(uid, activo,nombre, marca,cantidad,laboratorio,lugar,consumible, funciona)
                 )
             conn.commit()
         # except sqlite3.IntegrityError:

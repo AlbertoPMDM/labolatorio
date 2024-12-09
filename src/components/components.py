@@ -12,11 +12,27 @@ uid_input = dbc.Input(
     style=input_style
 )
 
+# Entrada para el uid
+activo_input = dbc.Input(
+    id="activo",
+    type="number",
+    placeholder="activo",
+    style=input_style
+)
+
 # Entrada para el nombre
 name_input = dbc.Input(
     id="name",
     type="text",
     placeholder="nombre",
+    style=input_style
+)
+
+# Entrada para la marca
+brand_input = dbc.Input(
+    id="brand",
+    type="text",
+    placeholder="marca",
     style=input_style
 )
 
@@ -40,7 +56,7 @@ lab_input = dbc.Input(
 place_input = dbc.Input(
     id="place",
     type="text",
-    placeholder="mueble o lugar",
+    placeholder="lugar dentro del laboratorio o salón",
     style=input_style
 )
 
@@ -53,6 +69,18 @@ cons_input = html.Div([
     inline=True,
     style=input_style,
     id="cons"
+)
+])
+
+# Entrada para si es funciona o no
+func_input = html.Div([
+    "Funciona?",
+    dbc.RadioItems(
+    ["sí", "no"],
+    "no",
+    inline=True,
+    style=input_style,
+    id="func"
 )
 ])
 
@@ -81,11 +109,14 @@ refresh_materials = html.Button(
 # Menú para la sección de materiales
 materials_menu = dbc.Stack([
     uid_input,
+    activo_input,
     name_input,
+    brand_input,
     qty_input,
     lab_input,
     place_input,
     cons_input,
+    func_input,
     submit_material
 ], gap=3)
 

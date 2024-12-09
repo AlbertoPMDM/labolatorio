@@ -4,7 +4,7 @@ from src.components import components
 import dash_bootstrap_components as dbc
 from src.database import Database
 
-db = Database("test.db")
+db = Database("inventario.db")
 
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True)
 
@@ -28,21 +28,24 @@ def refresh_materials(n):
     Output("material_add_message", "is_open"),
     Output("material_add_message", "children"),
     State("uid", "value"),
+    State("activo", "value"),
     State("name", "value"),
+    State("brand", "value"),
     State("qty", "value"),
     State("lab", "value"),
     State("place", "value"),
     State("cons", "value"),
+    State("func", "value"),
     Input("submit_material", "n_clicks"),
     prevent_initial_call=True
 )
-def submit_material(uid, name, qty, lab, place, cons, n):
+def submit_material(uid, activo, name, brand, qty, lab, place, cons, func, n):
     if n==None:
         return False, ""
     else:
         try:
-            print(uid, name, qty, lab, place, cons)
-            db.add_material(uid, name, qty, lab, place, cons)
+            print(uid, name, brand, qty, lab, place, cons, func)
+            db.add_material(uid, activo, name, brand, qty, lab, place, cons, func)
             return True, "Se agregó correctamente"
         except Exception as e:
             return True, f"Hubo un error {e}"
