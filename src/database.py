@@ -81,9 +81,52 @@ class Database:
                 return pd.read_sql('SELECT * FROM materiales', conn)
         except:
             ...
+
+    def get_materials(self, uid:int) -> pd.DataFrame:
+        '''
+        regresa todos los materiales, utilizando pandas
+        se manejan las excepciones desde la gui
+        ! hay que verificar que no se este ejecutando sql en un futuro
+        '''
+        self.create_materials_table()
+        # try:
+        with closing(sqlite3.connect(self.db)) as conn:
+            return pd.read_sql(f'SELECT * FROM materiales WHERE uid LIKE {uid}', conn)
+        # except:
+        #     ...
+    
+    def set_materials(self, 
+                     uid:int, 
+                     activo:int,
+                     nombre:str, 
+                     marca:str,
+                     cantidad:int, 
+                     laboratorio:str, 
+                     lugar:str, 
+                     consumible:str, 
+                     funciona:str) -> None:
+        '''
+        regresa todos los materiales, utilizando pandas
+        se manejan las excepciones desde la gui
+        ! hay que verificar que no se este ejecutando sql en un futuro
+        '''
+        self.create_materials_table()
+        # try:
+        with closing(sqlite3.connect(self.db)) as conn:
+            with closing(conn.cursor()) as cur:
+                cur.execute(
+                    '''
+                    UPDATE materiales
+                    SET (activo,nombre,marca,cantidad,laboratorio,lugar,consumible,funciona) =
+	                    (VALUES(?, ?, ?, ?, ?, ?, ?, ?))
+                    WHERE
+                        uid = ?
+                    ''',(activo, nombre, marca, cantidad, laboratorio, lugar, consumible, funciona, uid)
+                )
+            conn.commit()
+        # except:
+        #     ...
                 
-
-
 # def materials():
 #     uid = input("uid:  ")
 #     nombre = input("nombre: ")

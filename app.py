@@ -1,4 +1,4 @@
-from dash import Dash, callback, Output, Input, no_update, State
+from dash import Dash, callback, Output, Input, no_update, State, ctx
 import pandas as pd
 from src.components import components
 import dash_bootstrap_components as dbc
@@ -49,6 +49,91 @@ def submit_material(uid, activo, name, brand, qty, lab, place, cons, func, n):
             return True, "Se agregó correctamente"
         except Exception as e:
             return True, f"Hubo un error {e}"
+
+@callback(
+    Output("uid", "value"),
+    Output("activo", "value"),
+    Output("name", "value"),
+    Output("brand", "value"),
+    Output("qty", "value"),
+    Output("lab", "value"),
+    Output("place", "value"),
+    Output("cons", "value"),
+    Output("func", "value"),
+    Input("clear_material", "n_clicks"),
+    prevent_initial_call=True
+)
+def clear_material(n):
+    if n == None:
+        return no_update,no_update,no_update,no_update,no_update,no_update,no_update,no_update,no_update
+    else:
+        return "","","","","","","","",""
+
+@callback(
+    Output("uid_e", "value"),
+    Output("activo_e", "value"),
+    Output("name_e", "value"),
+    Output("brand_e", "value"),
+    Output("qty_e", "value"),
+    Output("lab_e", "value"),
+    Output("place_e", "value"),
+    Output("cons_e", "value"),
+    Output("func_e", "value"),
+    State("uid_e", "value"),
+    Input("clear_material_e", "n_clicks"),
+    Input("search_material_e", "n_clicks"),
+    prevent_initial_call=True
+)
+def mux_material_e(uid,clear,search):
+
+    if clear != None:
+        return "","","","","","","","",""
+    
+    if search != None:
+        try:
+            query = db.get_materials(uid)
+            print(query)
+            return (
+                query["uid"][0],
+                query["activo"][0],
+                query["nombre"][0],
+                query["marca"][0],
+                query["cantidad"][0],
+                query["laboratorio"][0],
+                query["lugar"][0],
+                query["consumible"][0],
+                query["funciona"][0]
+            )
+        except Exception as e:
+            print(e)
+
+@callback(
+    Output("material_add_message_e", "is_open"),
+    Output("material_add_message_e", "children"),
+    State("uid_e", "value"),
+    State("activo_e", "value"),
+    State("name_e", "value"),
+    State("brand_e", "value"),
+    State("qty_e", "value"),
+    State("lab_e", "value"),
+    State("place_e", "value"),
+    State("cons_e", "value"),
+    State("func_e", "value"),
+    Input("edit_material", "n_clicks"),
+    prevent_initial_call=True
+)
+def submit_material_e(uid, activo, name, brand, qty, lab, place, cons, func, n):
+    if n==None:
+        return False, ""
+    else:
+        try:
+            print("cambio", uid, name, brand, qty, lab, place, cons, func)
+            db.set_materials(uid, activo, name, brand, qty, lab, place, cons, func)
+            return True, "Se guardó correctamente"
+        except Exception as e:
+            return True, f"Hubo un error {e}"         
+
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
