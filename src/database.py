@@ -18,7 +18,7 @@ class Database:
                     cur.execute(
                         '''
                         CREATE TABLE IF NOT EXISTS "materiales" (
-                            "uid"	INTEGER,
+                            "uid"	INTEGER UNIQUE,
                             "activo" INTEGER,
                             "nombre"	TEXT,
                             "marca"	TEXT,
@@ -26,8 +26,7 @@ class Database:
                             "laboratorio"	TEXT,
                             "lugar" TEXT,
                             "consumible"    TEXT,
-                            "funciona" TEXT,
-                            PRIMARY KEY (uid)
+                            "funciona" TEXT
                         )
                         '''
                     )
