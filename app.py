@@ -67,7 +67,7 @@ def clear_material(n):
     if n == None:
         return no_update,no_update,no_update,no_update,no_update,no_update,no_update,no_update,no_update
     else:
-        return "","","","","","","","",""
+        return None,None,None,None,None,None,None,None,None
 
 @callback(
     Output("uid_e", "value"),
@@ -87,7 +87,7 @@ def clear_material(n):
 def mux_material_e(uid,clear,search):
 
     if clear != None:
-        return "","","","","","","","",""
+        return None,None,None,None,None,None,None,None,None
     
     if search != None:
         try:
