@@ -18,6 +18,7 @@ class Database:
                     cur.execute(
                         '''
                         CREATE TABLE IF NOT EXISTS "materiales" (
+                            "key" INTEGER,
                             "uid"	INTEGER UNIQUE,
                             "activo" INTEGER,
                             "nombre"	TEXT,
@@ -26,7 +27,8 @@ class Database:
                             "laboratorio"	TEXT,
                             "lugar" TEXT,
                             "consumible"    TEXT,
-                            "funciona" TEXT
+                            "funciona" TEXT,
+                            PRIMARY KEY (key AUTOINCREMENT)
                         )
                         '''
                     )
@@ -77,11 +79,19 @@ class Database:
         self.create_materials_table()
         try:
             with closing(sqlite3.connect(self.db)) as conn:
-                return pd.read_sql('SELECT * FROM materiales', conn)
+                return pd.read_sql('''SELECT  "uid",
+                    activo,
+                    "nombre",
+                    "marca",
+                    "cantidad",
+                    "laboratorio",
+                    "lugar",
+                    "consumible",
+                    "funciona" FROM materiales''', conn)
         except:
             ...
 
-    def get_materials(self, uid:int) -> pd.DataFrame:
+    def get_materials(self, uid:int=None, name:str=None) -> pd.DataFrame:
         '''
         regresa todos los materiales, utilizando pandas
         se manejan las excepciones desde la gui
@@ -89,8 +99,28 @@ class Database:
         '''
         self.create_materials_table()
         # try:
-        with closing(sqlite3.connect(self.db)) as conn:
-            return pd.read_sql(f'SELECT * FROM materiales WHERE uid LIKE {uid}', conn)
+        if name==None and uid!=None:
+            with closing(sqlite3.connect(self.db)) as conn:
+                return pd.read_sql(f'''SELECT "uid",
+                    activo,
+                    "nombre",
+                    "marca",
+                    "cantidad",
+                    "laboratorio",
+                    "lugar",
+                    "consumible",
+                    "funciona" FROM materiales WHERE uid LIKE {uid}''', conn)
+        elif name!= None and uid==None:
+            with closing(sqlite3.connect(self.db)) as conn:
+                return pd.read_sql(f'''SELECT "uid",
+                    activo,
+                    "nombre",
+                    "marca",
+                    "cantidad",
+                    "laboratorio",
+                    "lugar",
+                    "consumible",
+                    "funciona" FROM materiales WHERE name LIKE {name}''', conn)
         # except:
         #     ...
     
