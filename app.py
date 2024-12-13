@@ -3,10 +3,11 @@ import pandas as pd
 from src.components import components
 import dash_bootstrap_components as dbc
 from src.database import Database
+import time
 
 db = Database("inventario.db")
 
-app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True)
+app = Dash(external_stylesheets=[dbc.themes.FLATLY],suppress_callback_exceptions=True)
 
 app.layout = components.layout
 
@@ -19,10 +20,11 @@ def update_form(value):
 
 @callback(
     Output("materials_table", "data"),
+    Output("materials_table", "columns"),
     Input("refresh_materials", "n_clicks")
 )
 def refresh_materials(n):
-    return db.all_materials().to_dict("records")
+    return db.all_materials().to_dict("records"), Database.COLS_FOR_DASH
 
 @callback(
     Output("material_add_message", "is_open"),
@@ -79,19 +81,19 @@ def clear_material(n):
     Output("place_e", "value"),
     Output("cons_e", "value"),
     Output("func_e", "value"),
-    State("uid_e", "value"),
+    State('materials_table', 'data'),
     Input("clear_material_e", "n_clicks"),
-    Input("search_material_e", "n_clicks"),
+    Input('materials_table', 'selected_rows'),
     prevent_initial_call=True
 )
-def mux_material_e(uid,clear,search):
+def mux_material_e(data,clear,selection):
 
     if clear != None:
         return None,None,None,None,None,None,None,None,None
     
-    if search != None:
+    if selection != None:
         try:
-            query = db.get_materials(uid)
+            query = db.get_materials(data[selection[0]]["key"])
             print(query)
             return (
                 query["uid"][0],
@@ -110,6 +112,7 @@ def mux_material_e(uid,clear,search):
 @callback(
     Output("material_add_message_e", "is_open"),
     Output("material_add_message_e", "children"),
+    Output("materials_table", "filtering_settings"),
     State("uid_e", "value"),
     State("activo_e", "value"),
     State("name_e", "value"),
@@ -119,21 +122,21 @@ def mux_material_e(uid,clear,search):
     State("place_e", "value"),
     State("cons_e", "value"),
     State("func_e", "value"),
+    State('materials_table', 'data'),
+    State('materials_table', 'selected_rows'),
     Input("edit_material", "n_clicks"),
     prevent_initial_call=True
 )
-def submit_material_e(uid, activo, name, brand, qty, lab, place, cons, func, n):
+def submit_material_e(uid, activo, name, brand, qty, lab, place, cons, func, data, selection, n):
     if n==None:
-        return False, ""
+        return False, "", ""
     else:
         try:
             print("cambio", uid, name, brand, qty, lab, place, cons, func)
-            db.set_materials(uid, activo, name, brand, qty, lab, place, cons, func)
-            return True, "Se guardó correctamente"
+            db.set_materials(data[selection[0]]["key"], activo, name, brand, qty, lab, place, cons, func)
+            return True, "Se guardó correctamente", ""
         except Exception as e:
-            return True, f"Hubo un error {e}"         
-
-
+            return True, f"Hubo un error {e}", ""
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

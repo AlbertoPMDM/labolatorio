@@ -4,7 +4,22 @@ from collections.abc import Callable
 import pandas as pd
 
 class Database:
-    
+
+    # columnas para poder filtrar en dash, lo puse acá porque no se puede inferir el tipo de datos
+    # y aqui viene eso definido para actualizarlo con cambios, no es necesario poner la columna de 
+    # key porque no quiero que aparezca
+    COLS_FOR_DASH = [
+        {"name":"   uid", "id":"uid", "type":"numeric"},
+        {"name":"activo", "id":"activo", "type":"numeric"},
+        {"name":"nombre", "id":"nombre", "type":"text"},
+        {"name":"marca", "id":"marca", "type":"text"},
+        {"name":"cantidad", "id":"cantidad", "type":"numeric"},
+        {"name":"laboratorio", "id":"laboratorio", "type":"text"},
+        {"name":"lugar", "id":"lugar", "type":"text"},
+        {"name":"consumible", "id":"consumible", "type":"text"},
+        {"name":"funciona", "id":"funciona", "type":"text"}
+    ]
+
     def __init__(self, path) -> None:
         self.db = path
 
@@ -79,19 +94,11 @@ class Database:
         self.create_materials_table()
         try:
             with closing(sqlite3.connect(self.db)) as conn:
-                return pd.read_sql('''SELECT  "uid",
-                    activo,
-                    "nombre",
-                    "marca",
-                    "cantidad",
-                    "laboratorio",
-                    "lugar",
-                    "consumible",
-                    "funciona" FROM materiales''', conn)
+                return pd.read_sql('''SELECT * FROM materiales''', conn)
         except:
             ...
 
-    def get_materials(self, uid:int=None, name:str=None) -> pd.DataFrame:
+    def get_materials(self, key:int) -> pd.DataFrame:
         '''
         regresa todos los materiales, utilizando pandas
         se manejan las excepciones desde la gui
@@ -99,33 +106,21 @@ class Database:
         '''
         self.create_materials_table()
         # try:
-        if name==None and uid!=None:
-            with closing(sqlite3.connect(self.db)) as conn:
-                return pd.read_sql(f'''SELECT "uid",
-                    activo,
-                    "nombre",
-                    "marca",
-                    "cantidad",
-                    "laboratorio",
-                    "lugar",
-                    "consumible",
-                    "funciona" FROM materiales WHERE uid LIKE {uid}''', conn)
-        elif name!= None and uid==None:
-            with closing(sqlite3.connect(self.db)) as conn:
-                return pd.read_sql(f'''SELECT "uid",
-                    activo,
-                    "nombre",
-                    "marca",
-                    "cantidad",
-                    "laboratorio",
-                    "lugar",
-                    "consumible",
-                    "funciona" FROM materiales WHERE name LIKE {name}''', conn)
+        with closing(sqlite3.connect(self.db)) as conn:
+            return pd.read_sql(f'''SELECT "uid",
+                "activo",
+                "nombre",
+                "marca",
+                "cantidad",
+                "laboratorio",
+                "lugar",
+                "consumible",
+                "funciona" FROM materiales WHERE key LIKE {key}''', conn)
         # except:
         #     ...
     
     def set_materials(self, 
-                     uid:int, 
+                     key:int, 
                      activo:int,
                      nombre:str, 
                      marca:str,
@@ -149,8 +144,8 @@ class Database:
                     SET (activo,nombre,marca,cantidad,laboratorio,lugar,consumible,funciona) =
 	                    (VALUES(?, ?, ?, ?, ?, ?, ?, ?))
                     WHERE
-                        uid = ?
-                    ''',(activo, nombre, marca, cantidad, laboratorio, lugar, consumible, funciona, uid)
+                        key = ?
+                    ''',(activo, nombre, marca, cantidad, laboratorio, lugar, consumible, funciona, key)
                 )
             conn.commit()
         # except:
