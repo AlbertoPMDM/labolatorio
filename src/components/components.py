@@ -96,14 +96,14 @@ func_input = html.Div([
 ])
 
 # Botón para submitir materiales
-submit_material = html.Button(
+submit_material = dbc.Button(
     id="submit_material",
     children="añadir",
     style=INPUT_STYLE
 )
 
 # Botón para limpiar materiales
-clear_material = html.Button(
+clear_material = dbc.Button(
     id="clear_material",
     children="limpiar",
     style=INPUT_STYLE
@@ -121,6 +121,7 @@ materials_menu = dbc.Stack([
     place_input,
     cons_input,
     func_input,
+    html.Hr(),
     submit_material,
     clear_material
 ], gap=3)
@@ -141,6 +142,7 @@ uid_input_e = dbc.Input(
     id="uid_e",
     type="number",
     placeholder="uid",
+    disabled=True,
     style=INPUT_STYLE
 )
 
@@ -217,25 +219,26 @@ func_input_e = html.Div([
 
 ])
 # Botón para limpiar materiales
-clear_material_e = html.Button(
+clear_material_e = dbc.Button(
     id="clear_material_e",
     children="limpiar",
     style=INPUT_STYLE
 )
 
 # Botón para editar materiales
-edit_material = html.Button(
+edit_material = dbc.Button(
     id="edit_material",
     children="guardar",
     style=INPUT_STYLE
 )
 
-# Botón para buscar materiales en la pagina de editar
-search_material_e = html.Button(
-    id="search_material_e",
+# Botón para buscar materiales por uid en la pagina de editar
+search_material_uid_e = dbc.Button(
+    id="search_material_uid_e",
     children="buscar uid",
     style=INPUT_STYLE
 )
+
 
 # Menú para editar un material
 edit_materials_menu = dbc.Stack([
@@ -249,7 +252,7 @@ edit_materials_menu = dbc.Stack([
     place_input_e,
     cons_input_e,
     func_input_e,
-    search_material_e,
+    html.Hr(),
     edit_material,
     clear_material_e
 ], gap=3)
@@ -266,21 +269,40 @@ material_add_message_e = dbc.Modal(
 ############################ vista de tabla de materiales ######################
 
 # Botón para recargar la tabla de materiales
-refresh_materials = html.Button(
+refresh_materials = dbc.Button(
     id="refresh_materials",
-    children="recargar",
+    children="recargar tabla",
     style=INPUT_STYLE
 )
+
+to_edit_menu = dbc.Accordion([
+    dbc.AccordionItem(
+        edit_materials_menu,
+        item_id="edit_menu",
+        title="editar",
+        style=INPUT_STYLE
+    )
+],start_collapsed=True)
 
 # Tabla de los materiales
 materials_table = dash_table.DataTable(
     [],
-    id="materials_table"
+    columns=[],
+    id="materials_table",
+    page_size=10,
+    row_selectable="single",
+    filter_action="native",
+    style_table={'overflowX': 'scroll'},
+    style_cell={'minWidth': '20vw', 'width': '30vw', 'maxWidth': '100vw'}
 )
 
 # Tabla de materiales pero con botón para recargarla
 materials_table_view = dbc.Stack([
+    html.P("Para editar selecciona una fila"),
+    to_edit_menu,
+    html.Hr(),
     refresh_materials,
+    html.Hr(),
     materials_table
 ])
 
@@ -288,7 +310,7 @@ materials_table_view = dbc.Stack([
 
 # Selector de tabla, debe tener un elemento para cada valor, asociado en la variable TABLES
 table_select = dbc.Select(
-    ["Agregar Material", "Materiales", "Buscar y Editar Material"],
+    ["Agregar Material", "Materiales"],
     'Agregar Material', 
     id='table_select',
     style=INPUT_STYLE
@@ -303,14 +325,14 @@ form = html.Div(
 # Arreglo general
 layout = html.Div([
     table_select,
+    html.Hr(),
     form,
     material_add_message,
     material_add_message_e
-], style={"height":"100vh", "width":"100vw", "font-size": "100%"})
+], style={"height":"100vh", "width":"100vw", "font-size": "100%", "padding":"1.5em"})
 
 # Diccionario para elegir las formas, debe tener una entrada correspondiente en table_select
 TABLES = {
     "Agregar Material":materials_menu,
-    "Materiales":materials_table_view,
-    "Buscar y Editar Material":edit_materials_menu
+    "Materiales":materials_table_view
 }
