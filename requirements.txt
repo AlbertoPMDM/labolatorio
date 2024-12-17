@@ -1,0 +1,5 @@
+dash
+pandas
+segno
+dash-bootstrap-components
+gunicorn
