@@ -10,7 +10,8 @@ SALONES = [
     "lab fisica ii",
     "lab fisica iii",
     "lab termo",
-    "lab optica"
+    "lab optica",
+    "lab circuitos digitales"
 ]
 ########################## AGREGAR ########################
 
