@@ -4,10 +4,17 @@ from src.components import components
 import dash_bootstrap_components as dbc
 from src.database import Database
 import time
+import flask
+
+server = flask.Flask(__name__)
 
 db = Database("inventario.db")
 
-app = Dash(external_stylesheets=[dbc.themes.FLATLY],suppress_callback_exceptions=True)
+app = Dash(
+    external_stylesheets=[dbc.themes.FLATLY],
+    suppress_callback_exceptions=True,
+    server=server, 
+    routes_pathname_prefix="/")
 
 app.layout = components.layout
 
@@ -139,4 +146,4 @@ def submit_material_e(uid, activo, name, brand, qty, lab, place, cons, func, dat
             return True, f"Hubo un error {e}", ""
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(debug=True)
